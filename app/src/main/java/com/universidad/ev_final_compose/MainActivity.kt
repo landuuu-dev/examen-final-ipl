@@ -4,58 +4,49 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.universidad.ev_final_compose.ui.screens.ListScreen
+import com.universidad.ev_final_compose.ui.screens.FormScreen
 import com.universidad.ev_final_compose.ui.theme.ListaMedicionesViewModel
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import com.universidad.ev_final_compose.data.Medicion
-import java.time.LocalDate
-
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AppMedicionesUI()
-        }
-    }
-}
+            val navController = rememberNavController()
+            val vm: ListaMedicionesViewModel = viewModel(factory = ListaMedicionesViewModel.Factory)
 
-@Composable
-
-fun AppMedicionesUI(
-    vmListaMediciones: ListaMedicionesViewModel = viewModel(factory = ListaMedicionesViewModel.Factory)
-){
-
-    LaunchedEffect(Unit) {
-        vmListaMediciones.obtenerMedicion()
-    }
-    LazyColumn {
-        items(vmListaMediciones.medicion) { medicion ->
-            Text(text = medicion.valor.toString())
-        }
-
-        item{
-            Button(onClick = {
-                vmListaMediciones.insertarMedicion(
-                    Medicion(
-                        valor = 302L,
-                        tipoServicio = "luz",
-                        fecha = LocalDate.now()
-                    )
-                )
-
-
-            }){
-                Text("Agregar medición")
-
+            Scaffold(
+                floatingActionButton = {
+                    FloatingActionButton(onClick = { navController.navigate("form") }) {
+                        Icon(Icons.Default.Add, contentDescription = "Agregar")
+                    }
+                }
+            ) { innerPadding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = "list",
+                    modifier = Modifier.padding(innerPadding)   // 👈 aquí se usa
+                ) {
+                    composable("list") {
+                        ListScreen(vm = vm, onNavigateToForm = { navController.navigate("form") })
+                    }
+                    composable("form") {
+                        FormScreen(vm = vm, onDone = { navController.popBackStack() })
+                    }
+                }
             }
-        }
-    }
-
-}
+        }}}

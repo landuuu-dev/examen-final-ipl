@@ -7,7 +7,7 @@ import java.time.LocalDate
 @Entity
 data class Medicion(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,             // mantiene el id, Room lo genera
+    val id: Long = 0L,
     val valor: Long,
     val tipoServicio: String,
     val fecha: LocalDate

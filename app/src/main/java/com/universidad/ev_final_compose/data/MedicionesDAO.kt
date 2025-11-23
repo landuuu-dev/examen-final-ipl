@@ -10,6 +10,10 @@ import androidx.room.Update
 interface MedicionesDAO {
     @Query("SELECT * FROM Medicion ORDER BY fecha DESC")
     suspend fun obtenerTodos(): List<Medicion>
+
+    @Query("DELETE FROM Medicion")
+    suspend fun eliminarTodo()
+
     @Insert
     suspend fun insertar(medicion: Medicion)
     @Update
